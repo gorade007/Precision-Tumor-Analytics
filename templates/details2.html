@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tumor Detection Image Processing</title>
+    <style>
+        /* Global Styles */
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif; /* Modern font */
+    background-color: #eef2f3; /* Soft background color for a clean look */
+    color: #333; /* Dark text for readability */
+    margin: 0;
+    padding: 20px; /* Padding around the body */
+}
+
+h1 {
+    text-align: center;
+    color: #2c3e50; /* Darker color for the main heading */
+    margin-bottom: 30px; /* Increased space below the heading */
+    font-size: 2.5em; /* Larger font size for emphasis */
+    text-transform: uppercase; /* Uppercase for a strong presence */
+}
+
+/* Form Styles */
+form {
+    background: #ffffff; /* White background for the form */
+    padding: 30px; /* Increased padding for a spacious feel */
+    border-radius: 10px; /* More rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); /* Deeper shadow for more depth */
+    max-width: 600px; /* Increased max width for the form */
+    margin: 0 auto; /* Center the form */
+    border: 1px solid #dcdcdc; /* Light border around the form */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+label {
+    font-weight: bold; /* Bold label text */
+    display: block; /* Ensure labels take full width */
+    margin-bottom: 12px; /* Space below labels */
+    font-size: 1.1em; /* Slightly larger font for labels */
+}
+
+input[type="file"] {
+    padding: 10px; /* Moderate padding for comfort */
+    border: 1px solid #ccc; /* Light border */
+    border-radius: 5px; /* Rounded corners */
+    width: 100%; /* Full width */
+    margin-bottom: 20px; /* Space below the input */
+    font-size: 1em; /* Consistent font size */
+    background-color: #f9f9f9; /* Light background for a subtle contrast */
+    transition: border-color 0.3s, box-shadow 0.3s; /* Smooth transitions */
+}
+
+/* Focus state for better accessibility */
+input[type="file"]:focus {
+    border-color: #3498db; /* Change border color on focus */
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.5); /* Add shadow on focus */
+    outline: none; /* Remove default outline */
+}
+
+/* Style for the button inside the file input */
+input[type="file"]::-webkit-file-upload-button {
+    background-color: #3498db; /* Button color */
+    color: white; /* Button text color */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 8px 15px; /* Padding for the button */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 0.9em; /* Font size for the button */
+    transition: background-color 0.3s; /* Smooth transition */
+}
+
+/* Hover state for the button */
+input[type="file"]::-webkit-file-upload-button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+}
+/* Button Styles */
+button {
+    background-color: #3498db; /* Blue button */
+    color: white; /* White text */
+    border: none; /* Remove default border */
+    border-radius: 5px; /* Rounded corners */
+    padding: 12px 20px; /* Padding around button text */
+    cursor: pointer; /* Pointer cursor on hover */
+    font-size: 1.1em; /* Slightly larger font size */
+    transition: background-color 0.3s, transform 0.2s; /* Smooth transitions */
+    margin-top: 20px;
+}
+
+button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
+    transform: translateY(-2px); /* Slight lift effect on hover */
+}
+
+/* Grid Container Styles */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); /* Responsive grid */
+    gap: 30px; /* Increased space between grid items */
+    margin-top: 40px; /* Increased space above grid */
+}
+
+/* Grid Item Styles */
+.grid-item {
+    background: #ffffff; /* White background for grid items */
+    border: 1px solid #e0e0e0; /* Light border */
+    border-radius: 10px; /* More rounded corners */
+    padding: 20px; /* Increased padding inside grid items */
+    text-align: center; /* Center text */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Deeper shadow for depth */
+    transition: transform 0.3s, box-shadow 0.3s; /* Smooth transition for hover effect */
+}
+
+.grid-item:hover {
+    transform: translateY(-5px); /* Slightly lift on hover */
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Increase shadow on hover */
+}
+
+.grid-item img {
+    max-width: 100%; /* Responsive image */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 5px; /* Rounded corners for images */
+}
+
+.grid-item h2 {
+    font-size: 1.5em; /* Larger font size for headings */
+    margin: 15px 0; /* Space above and below headings */
+    color: #34495e; /* Darker color for headings */
+    font-weight: bold; /* Bold headings */
+    text-transform: capitalize; /* Capitalize headings for a polished look */
+}
+    </style>
+     <script>
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Store the image data in local storage
+                    localStorage.setItem('selectedImage', e.target.result);
+                    // Show the next button
+                    document.getElementById('nextButton').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function redirectToIndex() {
+            window.location.href = 'index.html';
+        }
+    </script>
+</head>
+<body>
+    <h1>Tumor Detection Image Processing</h1>
+
+    <form id="imageForm" enctype="multipart/form-data">
+        <label for="imageInput">Upload an image:</label>
+        <input type="file" id="imageInput" name="imageInput" accept="image/*" required>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="resultContainer" class="grid-container"></div>
+
+    <button id="nextButton" style="display:none;" onclick="redirectToIndex()">Next</button>
+
+    <script>
+        document.getElementById('imageForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData();
+            const imageInput = document.getElementById('imageInput').files[0];
+            formData.append('image', imageInput);
+
+            const operations = [
+                'grayscale', 'median_filter', 'high_pass_filter', 
+                'watershed_segmentation', 'morphological_operations'
+                , 'plot_tumor_boundary'
+            ];
+
+            // Clear the result container
+            document.getElementById('resultContainer').innerHTML = '';
+
+            // Loop over each operation and call the API for each one
+            for (const operation of operations) {
+                formData.set('operation', operation);
+
+                try {
+                    const response = await fetch('http://localhost:8000/process_image', {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error processing operation: ${operation}`);
+                    }
+
+                    // Create an object URL for the received image
+                    const imageBlob = await response.blob();
+                    const imageUrl = URL.createObjectURL(imageBlob);
+
+                    // Display the result image in a grid
+                    displayResult(operation, imageUrl);
+
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            }
+        });
+
+        function displayResult(operation, imageUrl) {
+            const resultContainer = document.getElementById('resultContainer');
+            const gridItem = document.createElement('div');
+            gridItem.classList.add('grid-item');
+
+            const heading = document.createElement('h2');
+            heading.textContent = `Result of ${operation}`;
+            gridItem.appendChild(heading);
+
+            const imageElement = document.createElement('img');
+            imageElement.src = imageUrl;
+            imageElement.alt = `${operation} result`;
+
+            gridItem.appendChild(imageElement);
+            resultContainer.appendChild(gridItem);
+        }
+    </script>
+</body>
+</html>

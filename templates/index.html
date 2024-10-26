@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brain Tumor Detection</title>
+    <style>
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #e0f7fa, #80deea);
+    margin: 0;
+    padding: 20px;
+}
+
+h1 {
+    text-align: center;
+    color: #004d40;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+form {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: 20px auto;
+    transition: transform 0.3s;
+}
+
+form:hover {
+    transform: scale(1.02);
+}
+
+input[type="file"] {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 2px solid #00796b;
+    border-radius: 5px;
+    width: calc(100% - 22px);
+    font-size: 16px;
+    outline: none;
+}
+
+input[type="file"]:hover {
+    border-color: #004d40;
+}
+
+button {
+    background-color: #00796b;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 18px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #004d40;
+}
+
+h2 {
+    text-align: center;
+    color: #004d40;
+    margin-top: 30px;
+    font-size: 2em;
+}
+
+p {
+    text-align: center;
+    color: #555;
+    margin: 5px 0;
+    font-size: 1.1em;
+}
+
+.result {
+    background: #e7f3fe;
+    border-left: 6px solid #2196F3;
+    padding: 15px;
+    margin: 20px auto;
+    max-width: 400px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+    </style>
+    <script>
+        window.onload = function() {
+            const selectedImage = localStorage.getItem('selectedImage');
+            if (selectedImage) {
+                const imageInput = document.getElementById('ath');
+                const imgElement = document.createElement('img');
+                imgElement.src = selectedImage;
+                imgElement.style.maxWidth = '100%'; // Adjust as needed
+                imgElement.style.border = '1px solid #ccc'; // Optional styling
+                document.body.appendChild(imgElement);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Upload Brain MRI Image</h1>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept="image/*" id="ath">
+        <button type="submit">Upload</button>
+    </form>
+
+    {% if tumor_size is not none %}
+        <h2>Results:</h2>
+        <p>Estimated Tumor Area: 
+            {{ tumor_size | round(2) }} mm²
+        </p>
+        {% if total_brain_area is not none %}
+            <p>Total Brain Area: {{ total_brain_area | round(2) }} mm²</p>
+            <p>Percentage of Tumor Area: {{ tumor_percentage | round(2) }}%</p>
+        {% endif %}
+    {% elif tumor_size is none %}
+        <p>No tumor detected or unable to estimate size.</p>
+    {% endif %}
+</body>
+</html>
